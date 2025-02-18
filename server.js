@@ -8,7 +8,10 @@ dotenv.config();
 connectDB();
 
 const app = express();
+
+// Habilitar CORS para cualquier origen
 app.use(cors());
+
 app.use(express.json());
 
 app.use("/api/resultados", resultadoRoutes);
