@@ -8,8 +8,8 @@ const registrarResultadoController = async (req, res) => {
       return res.status(400).json({ error: "Cédula inválida o laboratorista no autorizado" });
     }
 
-    // Asignar el nombre y cédula correctamente antes de registrar
-    datos.cedulaLaboratorista = cedula;  // 🔹 Asegurar que el nombre es el esperado en el modelo
+    // Asegurar que `cedulaLaboratorista` está correctamente asignado
+    datos.cedulaLaboratorista = cedula;
     datos.nombreLaboratorista = req.nombreLaboratorista;
 
     const resultado = await registrarResultado(datos);
