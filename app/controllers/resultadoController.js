@@ -1,5 +1,7 @@
 const { registrarResultado } = require("../services/resultadoService");
+const Resultado = require("../models/resultadoModel");
 
+// Controlador para registrar un resultado
 const registrarResultadoController = async (req, res) => {
   try {
     const { cedula, ...datos } = req.body;
@@ -9,14 +11,27 @@ const registrarResultadoController = async (req, res) => {
     }
 
     // Agregar el nombre del laboratorista antes de registrar
-    datos.cedula = cedula;
+    datos.cedulaLaboratorista = cedula;
     datos.nombreLaboratorista = req.nombreLaboratorista;
 
     const resultado = await registrarResultado(datos);
-    res.status(201).json({ mensaje: "Resultado registrado con éxito", resultado });
+    res.status(201).json({
+      mensaje: "Resultado registrado con éxito",
+      resultado
+    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-module.exports = { registrarResultado: registrarResultadoController };
+// Controlador para listar resultados
+const listarResultados = async (req, res) => {
+  try {
+    const resultados = await Resultado.find();
+    res.json(resultados);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener los resultados" });
+  }
+};
+
+module.exports = { registrarResultado: registrarResultadoController, listarResultados };

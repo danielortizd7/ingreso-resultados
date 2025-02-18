@@ -13,8 +13,8 @@ const registrarResultado = async (datos) => {
       nombreLaboratorista: datos.nombreLaboratorista 
     });
 
-    await resultado.save();
-    return resultado;
+    const resultadoGuardado = await resultado.save();
+    return resultadoGuardado; // Devolver el resultado completo
   } catch (error) {
     throw new Error("Error al registrar el resultado: " + error.message);
   }

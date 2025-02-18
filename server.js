@@ -12,8 +12,10 @@ const app = express();
 // Habilitar CORS para cualquier origen
 app.use(cors());
 
+// Middleware para parsear JSON
 app.use(express.json());
 
+// Definir rutas
 app.use("/api/resultados", resultadoRoutes);
 
 const PORT = process.env.PORT || 5000;
