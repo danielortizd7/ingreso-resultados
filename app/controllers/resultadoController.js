@@ -1,4 +1,4 @@
-const Resultado = require("../models/ResultadoModel");
+const Resultado = require("../models/resultadoModel");
 
 // 🔹 Obtener todos los resultados
 const obtenerResultados = async (req, res) => {
