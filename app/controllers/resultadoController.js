@@ -1,49 +1,44 @@
-const axios = require("axios");
-const Resultado = require("../models/resultadoModel");
+const Resultado = require("../models/ResultadoModel");
 
-// 🔹 Obtener una muestra por ID con sus resultados
+// 🔹 Obtener todos los resultados
+const obtenerResultados = async (req, res) => {
+  try {
+    const resultados = await Resultado.find();
+    res.json(resultados);
+  } catch (error) {
+    console.error("❌ Error al obtener los resultados:", error);
+    res.status(500).json({ error: "Error al obtener los resultados" });
+  }
+};
+
+// 🔹 Obtener un resultado por ID de muestra
 const obtenerMuestraPorId = async (req, res) => {
   try {
-    const { idMuestra } = req.params;
-
-    // Obtener la muestra desde el otro backend
-    const response = await axios.get("https://backendregistromuestra.onrender.com/muestras");
-    const muestra = response.data.find(m => m.id_muestra === idMuestra);
-
-    if (!muestra) {
-      return res.status(404).json({ error: `No se encontró la muestra con ID: ${idMuestra}` });
+    const resultado = await Resultado.findOne({ idMuestra: req.params.idMuestra });
+    if (!resultado) {
+      return res.status(404).json({ error: "Resultado no encontrado" });
     }
-
-    // Buscar si hay resultados registrados para esta muestra
-    const resultado = await Resultado.findOne({ idMuestra });
-
-    res.json({ muestra, resultado });
+    res.json(resultado);
   } catch (error) {
     console.error("❌ Error al obtener la muestra:", error);
     res.status(500).json({ error: "Error al obtener la muestra" });
   }
 };
 
-// 🔹 Registrar un resultado para una muestra existente
+// 🔹 Registrar un resultado
 const registrarResultado = async (req, res) => {
   try {
-    const { idMuestra, pH, turbidez, oxigenoDisuelto, nitratos, fosfatos, cedula } = req.body;
+    const { idMuestra, pH, turbidez, oxigenoDisuelto, nitratos, fosfatos, cedulaLaboratorista, nombreLaboratorista } = req.body;
 
-    // 🔹 Verificar si la muestra existe en el otro backend
-    const response = await axios.get("https://backendregistromuestra.onrender.com/muestras");
-    const muestraExiste = response.data.some(m => m.id_muestra === idMuestra);
-
-    if (!muestraExiste) {
-      return res.status(400).json({ error: `La muestra con ID "${idMuestra}" no existe.` });
+    if (!idMuestra || !pH || !turbidez || !oxigenoDisuelto || !nitratos || !fosfatos || !cedulaLaboratorista || !nombreLaboratorista) {
+      return res.status(400).json({ error: "Todos los campos son obligatorios" });
     }
 
-    // 🔹 Verificar si ya hay un resultado registrado para esa muestra
-    const resultadoExistente = await Resultado.findOne({ idMuestra });
-    if (resultadoExistente) {
-      return res.status(400).json({ error: `La muestra "${idMuestra}" ya tiene un resultado registrado.` });
+    const existeResultado = await Resultado.findOne({ idMuestra });
+    if (existeResultado) {
+      return res.status(400).json({ error: "Ya existe un resultado con este ID de muestra" });
     }
 
-    // 🔹 Crear y guardar el resultado
     const nuevoResultado = new Resultado({
       idMuestra,
       pH,
@@ -51,18 +46,17 @@ const registrarResultado = async (req, res) => {
       oxigenoDisuelto,
       nitratos,
       fosfatos,
-      cedulaLaboratorista: req.cedula,
-      nombreLaboratorista: req.nombreLaboratorista,
-      estado: "En análisis",
+      cedulaLaboratorista,
+      nombreLaboratorista
     });
 
     await nuevoResultado.save();
-    res.status(201).json({ mensaje: "✅ Resultado registrado con éxito", resultado: nuevoResultado });
+    res.status(201).json({ message: "Resultado registrado correctamente", resultado: nuevoResultado });
 
   } catch (error) {
-    console.error("❌ Error al registrar el resultado:", error);
+    console.error("❌ Error al registrar resultado:", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
-module.exports = { obtenerMuestraPorId, registrarResultado };
+module.exports = { obtenerResultados, obtenerMuestraPorId, registrarResultado };
