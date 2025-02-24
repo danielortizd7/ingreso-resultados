@@ -1,6 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const conectarDB = require("./app/database/databaseMongo"); // ✅ Ruta corregida
+const conectarDB = require("./app/database/databasemongo"); // ✅ Ruta corregida
 const resultadoRoutes = require("./app/routes/resultadoRoutes"); // ✅ Verifica que esta ruta exista
 const cors = require("cors");
 
