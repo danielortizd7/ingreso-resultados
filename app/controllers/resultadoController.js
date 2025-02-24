@@ -9,21 +9,30 @@ const laboratoristas = {
 
 // 🔹 Obtener el nombre del laboratorista por cédula
 exports.obtenerLaboratoristaPorCedula = async (req, res) => {
-  const { cedula } = req.params;
+  try {
+    const { cedula } = req.params;
+    console.log(`🔍 Buscando laboratorista con cédula: ${cedula}`);
 
-  if (laboratoristas[cedula]) {
-    return res.json({ nombre: laboratoristas[cedula] });
+    if (laboratoristas[cedula]) {
+      return res.json({ nombre: laboratoristas[cedula] });
+    }
+
+    return res.status(404).json({ error: "Laboratorista no encontrado" });
+  } catch (error) {
+    console.error("❌ Error en obtenerLaboratoristaPorCedula:", error);
+    res.status(500).json({ error: "Error en el servidor" });
   }
-
-  return res.status(404).json({ error: "Laboratorista no encontrado" });
 };
 
 // 🔹 Obtener todos los resultados
 exports.obtenerResultados = async (req, res) => {
   try {
+    console.log("📥 Solicitando todos los resultados...");
     const resultados = await Resultado.find();
+    
     res.json(resultados);
   } catch (error) {
+    console.error("❌ Error obteniendo resultados:", error);
     res.status(500).json({ error: "Error obteniendo resultados" });
   }
 };
@@ -31,14 +40,19 @@ exports.obtenerResultados = async (req, res) => {
 // 🔹 Registrar un resultado
 exports.registrarResultado = async (req, res) => {
   try {
+    console.log("📥 Datos recibidos:", req.body);
+
     const { idMuestra, pH, turbidez, oxigenoDisuelto, nitratos, fosfatos, cedulaLaboratorista } = req.body;
 
-    if (!idMuestra || !pH || !turbidez || !oxigenoDisuelto || !nitratos || !fosfatos || !cedulaLaboratorista) {
+    // 🔹 Validación de campos obligatorios
+    if (!idMuestra || pH == null || turbidez == null || oxigenoDisuelto == null || nitratos == null || fosfatos == null || !cedulaLaboratorista) {
       return res.status(400).json({ error: "Todos los campos son obligatorios" });
     }
 
+    // 🔹 Obtener el nombre del laboratorista
     const nombreLaboratorista = laboratoristas[cedulaLaboratorista] || "Desconocido";
 
+    // 🔹 Crear y guardar el nuevo resultado
     const nuevoResultado = new Resultado({
       idMuestra,
       pH,
@@ -51,8 +65,11 @@ exports.registrarResultado = async (req, res) => {
     });
 
     await nuevoResultado.save();
-    res.status(201).json({ message: "Resultado registrado exitosamente" });
+    console.log("✅ Resultado registrado exitosamente:", nuevoResultado);
+
+    res.status(201).json({ message: "Resultado registrado exitosamente", resultado: nuevoResultado });
   } catch (error) {
+    console.error("❌ Error registrando el resultado:", error);
     res.status(500).json({ error: "Error registrando el resultado" });
   }
 };
