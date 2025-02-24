@@ -29,7 +29,6 @@ exports.obtenerResultados = async (req, res) => {
   try {
     console.log("📥 Solicitando todos los resultados...");
     const resultados = await Resultado.find();
-    
     res.json(resultados);
   } catch (error) {
     console.error("❌ Error obteniendo resultados:", error);

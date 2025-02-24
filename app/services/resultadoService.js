@@ -9,8 +9,8 @@ const registrarResultado = async (datos) => {
       oxigenoDisuelto: datos.oxigenoDisuelto,
       nitratos: datos.nitratos,
       fosfatos: datos.fosfatos,
-      cedulaLaboratorista: datos.cedulaLaboratorista,  // 🔹 Se asegura que usa el nombre correcto
-      nombreLaboratorista: datos.nombreLaboratorista 
+      cedulaLaboratorista: datos.cedulaLaboratorista, // 🔹 Se asegura que usa el nombre correcto
+      nombreLaboratorista: datos.nombreLaboratorista,
     });
 
     await resultado.save();
