@@ -1,43 +1,43 @@
 const Resultado = require("../models/resultadoModel");
 
+// 🔹 Lista de laboratoristas predefinidos
+const laboratoristas = {
+  "12345678": "Juan Pérez",
+  "87654321": "María Gómez",
+  "11223344": "Carlos López",
+};
+
+// 🔹 Obtener el nombre del laboratorista por cédula
+exports.obtenerLaboratoristaPorCedula = async (req, res) => {
+  const { cedula } = req.params;
+
+  if (laboratoristas[cedula]) {
+    return res.json({ nombre: laboratoristas[cedula] });
+  }
+
+  return res.status(404).json({ error: "Laboratorista no encontrado" });
+};
+
 // 🔹 Obtener todos los resultados
-const obtenerResultados = async (req, res) => {
+exports.obtenerResultados = async (req, res) => {
   try {
     const resultados = await Resultado.find();
     res.json(resultados);
   } catch (error) {
-    console.error("❌ Error al obtener los resultados:", error);
-    res.status(500).json({ error: "Error al obtener los resultados" });
-  }
-};
-
-// 🔹 Obtener un resultado por ID de muestra
-const obtenerMuestraPorId = async (req, res) => {
-  try {
-    const resultado = await Resultado.findOne({ idMuestra: req.params.idMuestra });
-    if (!resultado) {
-      return res.status(404).json({ error: "Resultado no encontrado" });
-    }
-    res.json(resultado);
-  } catch (error) {
-    console.error("❌ Error al obtener la muestra:", error);
-    res.status(500).json({ error: "Error al obtener la muestra" });
+    res.status(500).json({ error: "Error obteniendo resultados" });
   }
 };
 
 // 🔹 Registrar un resultado
-const registrarResultado = async (req, res) => {
+exports.registrarResultado = async (req, res) => {
   try {
-    const { idMuestra, pH, turbidez, oxigenoDisuelto, nitratos, fosfatos, cedulaLaboratorista, nombreLaboratorista } = req.body;
+    const { idMuestra, pH, turbidez, oxigenoDisuelto, nitratos, fosfatos, cedulaLaboratorista } = req.body;
 
-    if (!idMuestra || !pH || !turbidez || !oxigenoDisuelto || !nitratos || !fosfatos || !cedulaLaboratorista || !nombreLaboratorista) {
+    if (!idMuestra || !pH || !turbidez || !oxigenoDisuelto || !nitratos || !fosfatos || !cedulaLaboratorista) {
       return res.status(400).json({ error: "Todos los campos son obligatorios" });
     }
 
-    const existeResultado = await Resultado.findOne({ idMuestra });
-    if (existeResultado) {
-      return res.status(400).json({ error: "Ya existe un resultado con este ID de muestra" });
-    }
+    const nombreLaboratorista = laboratoristas[cedulaLaboratorista] || "Desconocido";
 
     const nuevoResultado = new Resultado({
       idMuestra,
@@ -47,21 +47,12 @@ const registrarResultado = async (req, res) => {
       nitratos,
       fosfatos,
       cedulaLaboratorista,
-      nombreLaboratorista
+      nombreLaboratorista,
     });
 
     await nuevoResultado.save();
-    res.status(201).json({ message: "Resultado registrado correctamente", resultado: nuevoResultado });
-
+    res.status(201).json({ message: "Resultado registrado exitosamente" });
   } catch (error) {
-    console.error("❌ Error al registrar resultado:", error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    res.status(500).json({ error: "Error registrando el resultado" });
   }
-};
-
-// 🔹 Exportar funciones correctamente
-module.exports = {
-  obtenerResultados,
-  obtenerMuestraPorId,
-  registrarResultado
 };

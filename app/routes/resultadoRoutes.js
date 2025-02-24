@@ -1,16 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const { registrarResultado, obtenerMuestraPorId, obtenerResultados } = require("../controllers/resultadoController");
-const authMiddleware = require("../middleware/authMiddleware"); // ✅ Ruta corregida
-
+const {
+  registrarResultado,
+  obtenerResultados,
+  obtenerLaboratoristaPorCedula,
+} = require("../controllers/resultadoController");
 
 // 🔹 Obtener todos los resultados
 router.get("/resultados", obtenerResultados);
 
-// 🔹 Obtener información de una muestra por ID
-router.get("/muestra/:idMuestra", obtenerMuestraPorId);
+// 🔹 Registrar un resultado
+router.post("/registrar", registrarResultado);
 
-// 🔹 Registrar un resultado (con autenticación)
-router.post("/registrar", authMiddleware, registrarResultado);
+// 🔹 Obtener nombre del laboratorista por cédula
+router.get("/laboratorista/:cedula", obtenerLaboratoristaPorCedula);
 
 module.exports = router;
