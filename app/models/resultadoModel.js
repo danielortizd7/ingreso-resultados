@@ -10,6 +10,7 @@ const resultadoSchema = new mongoose.Schema(
     fosfatos: { type: Number, required: true },
     cedulaLaboratorista: { type: String, required: true },
     nombreLaboratorista: { type: String, required: true },
+    fechaAnalisis: { type: Date, default: Date.now },  // ✅ Agregado correctamente
   },
   { timestamps: true }
 );

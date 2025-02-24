@@ -1,3 +1,5 @@
+const Resultado = require("../models/resultadoModel");
+
 exports.obtenerResultados = async (req, res) => {
   try {
     const resultados = await Resultado.find();
@@ -10,14 +12,43 @@ exports.obtenerResultados = async (req, res) => {
 
 exports.registrarResultado = async (req, res) => {
   try {
-    const { idMuestra, pH, turbidez, oxigenoDisuelto, nitratos, fosfatos, cedulaLaboratorista } = req.body;
+    const { idMuestra, pH, turbidez, oxigenoDisuelto, nitratos, fosfatos, cedulaLaboratorista, nombreLaboratorista } = req.body;
 
-    if (!idMuestra || isNaN(pH) || isNaN(turbidez) || isNaN(oxigenoDisuelto) || isNaN(nitratos) || isNaN(fosfatos) || !cedulaLaboratorista) {
-      console.log("🚨 Error: Campos faltantes o inválidos", { idMuestra, pH, turbidez, oxigenoDisuelto, nitratos, fosfatos, cedulaLaboratorista });
+    // Validaciones
+    if (
+      !idMuestra?.trim() ||
+      !cedulaLaboratorista?.trim() ||
+      !nombreLaboratorista?.trim() ||
+      !Number.isFinite(pH) ||
+      !Number.isFinite(turbidez) ||
+      !Number.isFinite(oxigenoDisuelto) ||
+      !Number.isFinite(nitratos) ||
+      !Number.isFinite(fosfatos)
+    ) {
+      console.log("🚨 Error: Campos faltantes o inválidos", {
+        idMuestra,
+        pH,
+        turbidez,
+        oxigenoDisuelto,
+        nitratos,
+        fosfatos,
+        cedulaLaboratorista,
+        nombreLaboratorista,
+      });
       return res.status(400).json({ error: "Todos los campos son obligatorios y deben tener valores válidos" });
     }
 
-    const nuevoResultado = new Resultado({ idMuestra, pH, turbidez, oxigenoDisuelto, nitratos, fosfatos, cedulaLaboratorista });
+    const nuevoResultado = new Resultado({
+      idMuestra: idMuestra.trim(),
+      pH,
+      turbidez,
+      oxigenoDisuelto,
+      nitratos,
+      fosfatos,
+      cedulaLaboratorista: cedulaLaboratorista.trim(),
+      nombreLaboratorista: nombreLaboratorista.trim(),
+    });
+
     await nuevoResultado.save();
     
     res.status(201).json({ message: "Resultado registrado exitosamente", resultado: nuevoResultado });
