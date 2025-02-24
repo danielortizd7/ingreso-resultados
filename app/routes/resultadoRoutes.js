@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { registrarResultado, obtenerMuestraPorId, obtenerResultados } = require("../controllers/resultadoController");
-const authMiddleware = require("../middlewares/authMiddleware");  // Importamos el middleware
+const authMiddleware = require("../middleware/authMiddleware"); // ✅ Ruta corregida
+
 
 // 🔹 Obtener todos los resultados
 router.get("/resultados", obtenerResultados);

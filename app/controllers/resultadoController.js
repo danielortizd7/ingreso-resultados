@@ -1,11 +1,36 @@
 const Resultado = require("../models/resultadoModel");
 
+// 🔹 Obtener todos los resultados
+const obtenerResultados = async (req, res) => {
+  try {
+    const resultados = await Resultado.find();
+    res.json(resultados);
+  } catch (error) {
+    console.error("❌ Error al obtener los resultados:", error);
+    res.status(500).json({ error: "Error al obtener los resultados" });
+  }
+};
+
+// 🔹 Obtener un resultado por ID de muestra
+const obtenerMuestraPorId = async (req, res) => {
+  try {
+    const resultado = await Resultado.findOne({ idMuestra: req.params.idMuestra });
+    if (!resultado) {
+      return res.status(404).json({ error: "Resultado no encontrado" });
+    }
+    res.json(resultado);
+  } catch (error) {
+    console.error("❌ Error al obtener la muestra:", error);
+    res.status(500).json({ error: "Error al obtener la muestra" });
+  }
+};
+
 // 🔹 Registrar un resultado
 const registrarResultado = async (req, res) => {
   try {
-    const { idMuestra, pH, turbidez, oxigenoDisuelto, nitratos, fosfatos, cedulaLaboratorista } = req.body;
+    const { idMuestra, pH, turbidez, oxigenoDisuelto, nitratos, fosfatos, cedulaLaboratorista, nombreLaboratorista } = req.body;
 
-    if (!idMuestra || !pH || !turbidez || !oxigenoDisuelto || !nitratos || !fosfatos || !cedulaLaboratorista) {
+    if (!idMuestra || !pH || !turbidez || !oxigenoDisuelto || !nitratos || !fosfatos || !cedulaLaboratorista || !nombreLaboratorista) {
       return res.status(400).json({ error: "Todos los campos son obligatorios" });
     }
 
@@ -13,9 +38,6 @@ const registrarResultado = async (req, res) => {
     if (existeResultado) {
       return res.status(400).json({ error: "Ya existe un resultado con este ID de muestra" });
     }
-
-    // ⚡ Tomamos el nombre del laboratorista desde el middleware
-    const nombreLaboratorista = req.nombreLaboratorista;
 
     const nuevoResultado = new Resultado({
       idMuestra,
@@ -37,4 +59,9 @@ const registrarResultado = async (req, res) => {
   }
 };
 
-module.exports = { obtenerResultados, obtenerMuestraPorId, registrarResultado };
+// 🔹 Exportar funciones correctamente
+module.exports = {
+  obtenerResultados,
+  obtenerMuestraPorId,
+  registrarResultado
+};
