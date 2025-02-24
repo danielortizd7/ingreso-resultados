@@ -1,6 +1,5 @@
 const Resultado = require("../models/resultadoModel");
 
-// 🔹 Lista de laboratoristas predefinidos
 const laboratoristas = {
   "12345678": "Juan Pérez",
   "87654321": "María Gómez",
@@ -41,11 +40,18 @@ exports.registrarResultado = async (req, res) => {
   try {
     console.log("📥 Datos recibidos:", req.body);
 
-    const { idMuestra, pH, turbidez, oxigenoDisuelto, nitratos, fosfatos, cedulaLaboratorista } = req.body;
+    let { idMuestra, pH, turbidez, oxigenoDisuelto, nitratos, fosfatos, cedulaLaboratorista } = req.body;
+
+    // 🔹 Convertir valores numéricos si son strings
+    pH = parseFloat(pH);
+    turbidez = parseFloat(turbidez);
+    oxigenoDisuelto = parseFloat(oxigenoDisuelto);
+    nitratos = parseFloat(nitratos);
+    fosfatos = parseFloat(fosfatos);
 
     // 🔹 Validación de campos obligatorios
-    if (!idMuestra || pH == null || turbidez == null || oxigenoDisuelto == null || nitratos == null || fosfatos == null || !cedulaLaboratorista) {
-      return res.status(400).json({ error: "Todos los campos son obligatorios" });
+    if (!idMuestra || isNaN(pH) || isNaN(turbidez) || isNaN(oxigenoDisuelto) || isNaN(nitratos) || isNaN(fosfatos) || !cedulaLaboratorista) {
+      return res.status(400).json({ error: "Todos los campos son obligatorios y deben tener valores válidos" });
     }
 
     // 🔹 Obtener el nombre del laboratorista
