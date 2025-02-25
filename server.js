@@ -25,6 +25,12 @@ const app = express();
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
+// 🔹 Ruta raíz para evitar "Cannot GET /"
+app.get("/", (req, res) => {
+  res.send("🚀 API funcionando correctamente!");
+});
+
+// 🔹 Rutas principales
 app.use("/api", resultadoRoutes);
 
 const PORT = process.env.PORT || 5000;
