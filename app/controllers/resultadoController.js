@@ -30,9 +30,6 @@ exports.registrarResultado = async (req, res) => {
         let muestras = [];
         try {
             const response = await axios.get("https://backendregistromuestra.onrender.com/muestras");
-            if (response.status !== 200 || !Array.isArray(response.data)) {
-                throw new Error("Respuesta inesperada de la API");
-            }
             muestras = response.data;
         } catch (apiError) {
             console.error("❌ Error al obtener muestras:", apiError.message);
@@ -71,6 +68,3 @@ exports.registrarResultado = async (req, res) => {
         res.status(500).json({ error: "Error interno del servidor" });
     }
 };
-
-// 🔹 Exportar correctamente
-module.exports = exports;
