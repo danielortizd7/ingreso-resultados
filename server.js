@@ -33,6 +33,12 @@ app.get("/", (req, res) => {
 // 🔹 Rutas principales
 app.use("/api", resultadoRoutes);
 
+// 🔹 Middleware para manejar errores globales
+app.use((err, req, res, next) => {
+  console.error("❌ Error en el servidor:", err);
+  res.status(500).json({ error: "Error interno del servidor" });
+});
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
